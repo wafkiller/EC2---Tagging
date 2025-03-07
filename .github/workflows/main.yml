@@ -1,0 +1,26 @@
+name: Tag EC2 Instance
+
+on:
+  workflow_dispatch: # Allows manual triggering
+  push:
+    branches:
+      - main # Adjust as needed
+
+jobs:
+  tag-ec2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Tag EC2 instance
+        run: |
+          INSTANCE_ID="i-0abcdef1234567890"  # Replace with your EC2 instance ID
+          aws ec2 create-tags --resources $INSTANCE_ID --tags Key=Environment,Value=Production
